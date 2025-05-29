@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Exam</title>
+    <style>
+        /* Reset and general styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fb;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        /* Main container */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Questions section */
+        .questions {
+            flex: 3;
+            padding-right: 30px;
+            border-right: 1px solid #ddd;
+            max-height: 80vh; /* Limit the height for scrolling */
+            overflow-y: auto; /* Make it scrollable */
+        }
+        .chapter-tabs {
+            display: flex;
+            justify-content: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .chapter-tabs button {
+            background: #e6e6e6;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .chapter-tabs button:hover, .chapter-tabs button.active {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .question {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+        .question:hover {
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+        }
+        .question h4 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+        .question-number {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            color: #555;
+            transition: color 0.3s;
+        }
+        label:hover {
+            color: #007bff;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Timer and progress section */
+        .timer, .progress {
+            flex: 1;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px; /* Sticky position with a gap from the top */
+            height: 100%;
+            max-height: 80vh; /* Limit the height for the timer */
+        }
+        .remaining-time {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .submit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .submit:hover {
+            background-color: #218838;
+        }
+
+        /* Progress bar */
+        progress {
+            width: 100%;
+            height: 18px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* Media Queries */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .questions {
+                padding-right: 0;
+                margin-bottom: 30px;
+            }
+            .chapter-tabs {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Answer the Questions</h1>
+    <div class="container">
+        <!-- Questions Section -->
+        <div class="questions">
+            <div class="chapter-tabs">
+                <button class="active">Chapter 1</button>
+                <button>Chapter 2</button>
+                <button>Chapter 3</button>
+            </div>
+            <form id="exam-form" method="POST" action="/submit_answers">
+                {% for i, question in enumerate(questions) %}
+                    <div class="question">
+                        <h4>{{ question.question }}</h4>
+                        <label><input type="radio" name="question{{ i }}" value="a" required> {{ question.option_a }}</label>
+                        <label><input type="radio" name="question{{ i }}" value="b"> {{ question.option_b }}</label>
+                        <label><input type="radio" name="question{{ i }}" value="c"> {{ question.option_c }}</label>
+                        <label><input type="radio" name="question{{ i }}" value="d"> {{ question.option_d }}</label>
+                        
+                        <!-- Hidden input to store the correct answer -->
+                        <input type="hidden" name="correct_answer{{ i }}" value="{{ question.correct_answer }}">
+                    </div>
+                {% endfor %}
+            
+        </div>
+
+        <!-- Timer and Progress Section -->
+        <div class="timer">
+            <h2>Remaining Time</h2>
+            <div class="remaining-time" id="timer">00:00:00</div>
+            <div class="progress">
+                <h2>Progress</h2>
+                <label>Attempted: <span id="attempted-count">0</span>/{{ questions|length }}</label>
+                <progress id="progress-bar" value="0" max="{{ questions|length }}"></progress>
+                <button type="submit" class="submit">Submit</button>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let totalTime = 60 * 10; // 10 minutes in seconds
+        let remainingTime = totalTime;
+        const timerElement = document.getElementById('timer');
+        const progressBar = document.getElementById('progress-bar');
+        const attemptedCountElement = document.getElementById('attempted-count');
+
+        function updateTimer() {
+            let minutes = Math.floor(remainingTime / 60);
+            let seconds = remainingTime % 60;
+            timerElement.textContent = `${padZero(minutes)}:${padZero(seconds)}`;
+            remainingTime--;
+
+            if (remainingTime < 0) {
+                clearInterval(timerInterval);
+                alert('Time is up! Submitting your answers.');
+                document.getElementById('exam-form').submit(); // Automatically submit after timer ends
+            }
+        }
+
+        function padZero(value) {
+            return value < 10 ? '0' + value : value;
+        }
+
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Progress bar functionality
+        let totalQuestions = {{ questions|length }}; // Dynamically get total questions from the template
+        let answeredQuestions = 0;
+
+        // Listen for radio button changes to track answered questions
+        document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.addEventListener('change', () => {
+                answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+                attemptedCountElement.textContent = answeredQuestions;
+                progressBar.value = answeredQuestions;
+                progressBar.max = totalQuestions; // Dynamically set the max value
+            });
+        });
+    </script>
+</body>
+</html>

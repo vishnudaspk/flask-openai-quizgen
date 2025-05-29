@@ -1,0 +1,74 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #ffffff; /* White background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.upload_container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Slightly lighter shadow */
+    padding: 40px;
+    width: 400px;
+    text-align: center;
+}
+
+.drag-drop-box {
+    border: 2px dashed #aaaaaa;
+    border-radius: 6px;
+    padding: 40px;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.drag-drop-box p {
+    margin: 0;
+    font-size: 16px;
+    color: #555555;
+}
+
+.link {
+    color: #007BFF;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.file-name-box {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    height: 10px;
+    margin-top: 5px;
+}
+
+.progress {
+    background-color: #007BFF;
+    height: 100%;
+    border-radius: 5px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.submit-button {
+    background-color: #007BFF;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 10px;
+    width: 100%;
+    font-size: 16px;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}

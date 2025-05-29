@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDF</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="upload_container">
+        <form class="upload_form" action="/upload" method="POST" enctype="multipart/form-data">
+          <!-- Drag and Drop Box -->
+          <div class="drag-drop-box" id="drag-drop-box">
+            <p>Drag and Drop Your File Here<br>or <span class="link">click here to upload file</span></p>
+            <input type="file" name="pdf_file" id="pdf-file" accept=".pdf" required style="display: none;">
+          </div>
+      
+          <!-- File Name Box -->
+          <div id="file-name-box" class="file-name-box" style="display: none;">
+            <p id="file-name">file_name</p>
+            <div class="progress-bar">
+                <div class="progress" id="progress" style="width: 0%;"></div>
+            </div>
+            <button type="submit" id="upload-button" class="submit-button" style="display: none;">LET'S GO!</button>
+          </div>
+      
+        </form>
+    </div>
+      
+</body>
+</html>
+
+<script>
+ const dropBox = document.getElementById('drag-drop-box');
+const fileInput = document.getElementById('pdf-file');
+const fileNameBox = document.getElementById('file-name-box');
+const fileNameText = document.getElementById('file-name');
+const uploadButton = document.getElementById('upload-button');
+const progress = document.getElementById('progress');
+
+// Trigger file input when the drag-drop box is clicked
+dropBox.addEventListener('click', function() {
+  fileInput.click();
+});
+
+// Highlight the box when a file is dragged over
+dropBox.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  dropBox.classList.add('dragover');
+});
+
+// Remove highlight when dragging leaves the box
+dropBox.addEventListener('dragleave', function() {
+  dropBox.classList.remove('dragover');
+});
+
+// Handle drop of a file
+dropBox.addEventListener('drop', function(e) {
+  e.preventDefault();
+  dropBox.classList.remove('dragover');
+  
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') {
+    fileInput.files = e.dataTransfer.files; // Assign dropped file to input
+    displayFileName(file.name); // Display the file name
+    // Start the file upload
+    uploadFile(file);
+  } else {
+    alert('Please drop a valid PDF file!');
+  }
+});
+
+// Function to display the file name and show the upload button
+function displayFileName(fileName) {
+  // Show file name box and update the file name text
+  fileNameBox.style.display = 'block';
+  fileNameText.textContent = `Selected file: ${fileName}`;
+  
+  // Show the upload button
+  uploadButton.style.display = 'inline-block';
+}
+
+// Handle file selection from the input
+fileInput.addEventListener('change', function() {
+  const file = fileInput.files[0];
+  if (file && file.type === 'application/pdf') {
+    displayFileName(file.name); // Display the file name
+    // Start the file upload
+    uploadFile(file);
+  } else {
+    alert('Please select a valid PDF file!');
+  }
+});
+
+// Function to simulate file upload and update progress bar
+function uploadFile(file) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/upload', true);
+  
+  xhr.upload.addEventListener('progress', function(e) {
+    if (e.lengthComputable) {
+      const percent = (e.loaded / e.total) * 100;
+      progress.style.width = percent + '%';
+    }
+  });
+  
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      alert('File uploaded successfully');
+    } else {
+      alert('Upload failed');
+    }
+  };
+  
+  const formData = new FormData();
+  formData.append('pdf_file', file);
+  xhr.send(formData);
+}
+</script>

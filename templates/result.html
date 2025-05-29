@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f9fa;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+    
+            
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 500px;
+        }
+        h1 {
+            color: #ff851b;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .score {
+            font-size: 30px;
+            color: #343a40;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .results {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        .result-item {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            width: 130px;
+            text-align: center;
+        }
+        .result-item > strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #1a8d33;
+        }
+        .exit {
+            background-color: #dc3545;
+        }
+        .exit:hover {
+            background-color: #c82333;
+        }
+        .result-image {
+            width: 50%;
+            
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="container" 
+        data-score="{{ score }}"
+        data-total-questions="{{ total_questions }}"
+        data-correct-answers="{{ correct_answers }}"
+        data-incorrect-answers="{{ incorrect_answers }}"
+        data-result-image="{{ result_image }}"
+        data-result-title="{{ result_title }}"
+        data-result-message="{{ result_message }}">
+
+        <!-- Dynamic image -->
+        <img class="result-image" id="resultImage" src="exm.jpg" alt="Result Image" >
+
+        <h1 id="resultTitle">{{ result_title }}</h1>
+        <p class="score" id="score">{{ score }}%</p>
+        <p id="resultMessage">{{ result_message }}</p>
+
+        <div class="results">
+            <div class="result-item">
+                <strong>Total Questions</strong>
+                <div id="totalQuestions">{{ total_questions }}</div>
+            </div>
+            <div class="result-item">
+                <strong>Correct Answers</strong>
+                <div id="correctAnswers">{{ correct_answers }}</div>
+            </div>
+            <div class="result-item">
+                <strong>Incorrect Answers</strong>
+                <div id="incorrectAnswers">{{ incorrect_answers }}</div>
+            </div>
+        </div>
+
+        <button class="button exit">Exit</button>
+        <button class="button">Yes!</button>
+    </div>
+
+    <script>
+        // Use the data attributes from the container to populate the dynamic values
+        const container = document.querySelector('.container');
+        
+        const score = parseInt(container.getAttribute('data-score'));  // Ensure score is treated as an integer
+        const totalQuestions = container.getAttribute('data-total-questions');
+        const correctAnswers = container.getAttribute('data-correct-answers');
+        const incorrectAnswers = container.getAttribute('data-incorrect-answers');
+      
+        const resultTitle = container.getAttribute('data-result-title');
+        const resultMessage = container.getAttribute('data-result-message');
+
+        // Determine pass or fail status and dynamic image
+        const resultStatus = score >= 50 ? "You passed the exam!" : "Sorry, you failed.";
+        const resultStatusTitle = score >= 50 ? "WELL DONE!" : "BETTER LUCK NEXT TIME!";
+
+        // Update the DOM with dynamic data
+        document.getElementById("resultTitle").textContent = resultStatusTitle;
+        document.getElementById("score").textContent = `${score}%`;
+        document.getElementById("resultMessage").textContent = resultStatus;
+        document.getElementById("totalQuestions").textContent = totalQuestions;
+        document.getElementById("correctAnswers").textContent = correctAnswers;
+        document.getElementById("incorrectAnswers").textContent = incorrectAnswers;
+    </script>
+</body>
+</html>
